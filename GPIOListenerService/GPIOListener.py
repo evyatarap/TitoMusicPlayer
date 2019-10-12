@@ -1,8 +1,6 @@
 from gpiozero import Button
 from time import sleep
 
-  
-
 
 if __name__ == '__main__':
     print("GPIOListener Service started...")
