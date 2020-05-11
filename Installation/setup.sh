@@ -39,5 +39,8 @@ pip install pi-rc522
 
 git clone https://github.com/ondryaso/pi-rc522.git
 
+# Install speach library
+sudo apt-get install espeak
+
 # reboot pi to enable SPI settings
 sudo reboot
