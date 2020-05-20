@@ -1,3 +1,6 @@
 pyttsx3==2.87
 websocket-client
 future
+gpiozero==1.5.1
+spidev==3.4
+pi-rc522==2.2.1

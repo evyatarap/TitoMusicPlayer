@@ -34,8 +34,8 @@ git clone https://github.com/mxgxw/MFRC522-python.git
 
 # Installing python2.7 pip
 sudo apt-get install python-pip
-pip install spidev
-pip install pi-rc522
+pip3 install spidev
+pip3 install pi-rc522
 
 git clone https://github.com/ondryaso/pi-rc522.git
 

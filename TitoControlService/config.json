@@ -1,4 +1,10 @@
 {
     "debug": "true",
-    "mopidy_url": "192.168.1.33:6680"
+    "mopidy_url": "192.168.1.33:6680",
+    "playback_gpios":{
+        "play": "6",
+        "stop": "17",
+        "forward": "27",
+        "backward" : "22"
+    }
 }

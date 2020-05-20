@@ -65,7 +65,7 @@ def format_nice(data, format=None):
             return ''.join(str_uris)
 
         if format == 'browse':
-            return ''.join(['\n\t' + format_nice(item) for item in data])
+            return ''.join(['\n\t(' + str(i) + ') ' + format_nice(data[i]) for i in range(len(data))])
 
         if format == 'search':
             return '\n'.join([format_nice(item) for item in data])
