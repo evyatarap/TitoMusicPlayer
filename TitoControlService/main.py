@@ -9,9 +9,11 @@ from cli import CLI
 class BussinessLogic(object):
 
     def __init__(self):
-        self.config = Config.getConfig()
+        self.config = Config()
+        self.generalConfig = self.config.getGeneralConfig()
+
         self.mopidy = MopidyClient(
-            ws_url=f"ws://{self.config['mopidy_url']}/mopidy/ws",
+            ws_url=f"ws://{self.generalConfig['mopidy_url']}/mopidy/ws",
             error_handler=self._on_server_error,
             connection_handler=self._on_connection,
             autoconnect=False,
@@ -19,7 +21,7 @@ class BussinessLogic(object):
             retry_secs=10
         )
 
-        self.gpioPlackbackController = GPIOPlaybackController(  self.config, 
+        self.gpioPlackbackController = GPIOPlaybackController(  self.generalConfig, 
                                                                 self._on_play_pressed, 
                                                                 self._on_stop_pressed, 
                                                                 self._on_forward_pressed, 
@@ -58,17 +60,25 @@ class BussinessLogic(object):
         self.cli.show_playlists(playlist)
 
         # Get playlist index from the list
-        playlistIndex = input("Select playlist (enter index number): ")
+        playlistIndex = int(input("Select playlist (enter index number): "))
 
         # Read RFID
+        tagId = None
         print("Place your RFID tag ....")
-        if self.config['debug'] == "true":
+        if self.generalConfig['debug'] == "true":
             tagId = "123214553"
-        else
-            tagId = ""
+        else:
+            #tagId = RFIDReader.ReadTag()
+            pass
 
-        # Get playlist uri and save it to a local config file with related rfid 
+        if tagId is None:
+            print("Failed to read RFID tag, try again.")
+            return
         
+        # Get playlist uri and save it to a local config file with related rfid 
+        self.config.addPlaylistConfig(playlist[playlistIndex]['uri'], tagId)
+        print(f'Playlist: {playlist[playlistIndex]["name"]} attached to Tag: {tagId}')
+
     
     def run(self):
         self.mopidy.connect()
