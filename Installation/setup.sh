@@ -40,7 +40,7 @@ pip3 install pi-rc522
 git clone https://github.com/ondryaso/pi-rc522.git
 
 # Install speach library
-sudo apt-get install espeak
+sudo apt-get install sox
 
 # reboot pi to enable SPI settings
 sudo reboot

@@ -32,13 +32,14 @@ class Config(object):
         with open(PLAYLISTS_CONFIG_FILE_PATH, 'w') as json_file:
             json.dump(jsonConfig, json_file)
     
-    def addPlaylistConfig(self, playlistUrl, tagid):
+    def addPlaylistConfig(self, playlistUrl, playlistName, tagid):
         playlistConfig = self.getPlaylistsConfig()
         if playlistConfig is None:
             logger.info("No playlist configuration found, creating a new one.")
             playlistConfig = {}
 
-        playlistConfig[tagid] = playlistUrl
+        playlistConfig[tagid] = {'uri': playlistUrl, 'name': playlistName}
         self._savePlaylistsConfig(playlistConfig)
+        return playlistConfig
 
 

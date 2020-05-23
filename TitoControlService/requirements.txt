@@ -4,3 +4,4 @@ future
 gpiozero==1.5.1
 spidev==3.4
 pi-rc522==2.2.1
+google-speech==1.1.0

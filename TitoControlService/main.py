@@ -3,6 +3,7 @@ from mopidy_json_client import MopidyClient
 from configurations import Config
 from GPIOController import GPIOPlaybackController
 from cli import CLI
+from google_speech import Speech
 #from RFIDController import RFIDReader
 
 
@@ -11,6 +12,7 @@ class BussinessLogic(object):
     def __init__(self):
         self.config = Config()
         self.generalConfig = self.config.getGeneralConfig()
+        self.playlistsTagsConfig = self.config.getPlaylistsConfig()
 
         self.mopidy = MopidyClient(
             ws_url=f"ws://{self.generalConfig['mopidy_url']}/mopidy/ws",
@@ -41,9 +43,32 @@ class BussinessLogic(object):
         print("Mopidy server error: " + error)
 
     def _on_play_pressed(self):
-        pass
+        
+        tagId = None
+        if self.generalConfig['debug'] == "true":
+            tagId = "1232145531"
+        else:
+            #tagId = RFIDReader.ReadTag()
+            pass
+        
+        playlistInfo = self._getPlaylistInfoFromTagId(tagId)
+        if playlistInfo is None:
+            print("Tag is not associated with any playlist")
+            Speech("Tag is not associated with any playlist", "en").play()
+        else:
+            Speech(f'Now playing: {playlistInfo["name"]} playlist.', "en").play()
+            self.mopidy.tracklist.clear()
+            self.mopidy.tracklist.add(uris=[playlistInfo['uri']])
+            self.mopidy.playback.play()
+    
+    def _getPlaylistInfoFromTagId(self, tagId):
+        try:
+            return self.playlistsTagsConfig[tagId]
+        except Exception:
+            return None
 
     def _on_stop_pressed(self):
+        self.mopidy.playback.pause()
         pass
 
     def _on_forward_pressed(self):
@@ -76,7 +101,8 @@ class BussinessLogic(object):
             return
         
         # Get playlist uri and save it to a local config file with related rfid 
-        self.config.addPlaylistConfig(playlist[playlistIndex]['uri'], tagId)
+        self.playlistsTagsConfig = self.config.addPlaylistConfig(playlist[playlistIndex]['uri'], playlist[playlistIndex]['name'] ,tagId)
+        
         print(f'Playlist: {playlist[playlistIndex]["name"]} attached to Tag: {tagId}')
 
     
