@@ -12,6 +12,9 @@ sudo systemctl start mopidy
 sudo apt install mopidy-spotify
 sudo systemctl restart mopidy
 
+# TODO: Configure spotify login credentials on: /etc/mopidy/mopidy.conf
+# Use this url to get your credentials: https://mopidy.com/ext/spotify/
+
 # Install python-pip
 sudo apt-get install python3-pip
 
@@ -40,7 +43,7 @@ pip3 install pi-rc522
 git clone https://github.com/ondryaso/pi-rc522.git
 
 # Install speach library
-sudo apt-get install sox
+sudo apt-get install sox libsox-fmt-mp3 -y
 
 # reboot pi to enable SPI settings
 sudo reboot
