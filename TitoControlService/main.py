@@ -4,7 +4,7 @@ from configurations import Config
 from GPIOController import GPIOPlaybackController
 from cli import CLI
 from google_speech import Speech
-#from RFIDController import RFIDReader
+from RFIDController import RFIDReader
 
 
 class BussinessLogic(object):
@@ -43,24 +43,29 @@ class BussinessLogic(object):
         print("Mopidy server error: " + error)
 
     def _on_play_pressed(self):
-        
+
+        print("play")        
+
         tagId = None
-        if self.generalConfig['debug'] == "true":
+        if self.generalConfig['debug_rfid'] == "true":
             tagId = "1232145531"
         else:
-            #tagId = RFIDReader.ReadTag()
-            pass
+            tagId = RFIDReader.ReadTag()
         
-        playlistInfo = self._getPlaylistInfoFromTagId(tagId)
-        if playlistInfo is None:
-            print("Tag is not associated with any playlist")
-            Speech("Tag is not associated with any playlist", "en").play()
+        if tagId is None: 
+                print("No RFID Tag found")
+                Speech("No RFID Tag foundd", "en").play()
         else:
-            Speech(f'Now playing: {playlistInfo["name"]} playlist.', "en").play()
-            self.mopidy.tracklist.clear()
-            self.mopidy.tracklist.add(uris=[playlistInfo['uri']])
-            self.mopidy.playback.play()
-    
+            playlistInfo = self._getPlaylistInfoFromTagId(tagId)
+            if playlistInfo is None:
+                print("Tag is not associated with any playlist")
+                Speech("Tag is not associated with any playlist", "en").play()
+            else:
+                Speech(f'Now playing: {playlistInfo["name"]}, playlist.', "en").play()
+                self.mopidy.tracklist.clear()
+                self.mopidy.tracklist.add(uris=[playlistInfo['uri']])
+                self.mopidy.playback.play()
+        
     def _getPlaylistInfoFromTagId(self, tagId):
         try:
             return self.playlistsTagsConfig[tagId]
@@ -68,13 +73,18 @@ class BussinessLogic(object):
             return None
 
     def _on_stop_pressed(self):
+        print("stop")
         self.mopidy.playback.pause()
         pass
 
     def _on_forward_pressed(self):
+        print("next")
+        self.mopidy.playback.next()
         pass
 
     def _on_backward_pressed(self):
+        print("prev")
+        self.mopidy.playback.previous()
         pass
 
     def _on_pair_tag(self):
@@ -93,7 +103,7 @@ class BussinessLogic(object):
         if self.generalConfig['debug'] == "true":
             tagId = "123214553"
         else:
-            #tagId = RFIDReader.ReadTag()
+            tagId = RFIDReader.ReadTag()
             pass
 
         if tagId is None:
