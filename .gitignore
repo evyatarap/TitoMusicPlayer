@@ -1,4 +1,4 @@
 *.pyc
-*.cpython-37.pyc
-TitoControlService/__pycache__/configurations.cpython-37.pyc
-TitoControlService/mopidy_json_client/__pycache__/formatting.cpython-37.pyc
+__pycache__
+TitoControlService/__pycache__
+TitoControlService/mopidy_json_client/__pycache__
