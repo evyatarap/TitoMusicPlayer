@@ -1,11 +1,17 @@
 import pyttsx3
+import sys
 from mopidy_json_client import MopidyClient
 from configurations import Config
 from GPIOController import GPIOPlaybackController
 from cli import CLI
 from google_speech import Speech
-from RFIDController import RFIDReader
+#from RFIDController import RFIDReader
+import logging
+from logging import handlers
+from pathlib import Path
+import os
 
+logger = logging.getLogger("TitoMusicPlayer")
 
 class BussinessLogic(object):
 
@@ -54,7 +60,7 @@ class BussinessLogic(object):
         
         if tagId is None: 
                 print("No RFID Tag found")
-                Speech("No RFID Tag foundd", "en").play()
+                Speech("No RFID Tag found", "en").play()
         else:
             playlistInfo = self._getPlaylistInfoFromTagId(tagId)
             if playlistInfo is None:
@@ -120,14 +126,25 @@ class BussinessLogic(object):
         self.mopidy.connect()
         self.cli.start()
 
+def setup_logging():
+
+    LOG_FILE_PATH = "/var/log/TitoMusicPlayer/TitoMusicPlayer.log"
+    logger.setLevel(logging.DEBUG)
+
+    log_file_dir = Path(LOG_FILE_PATH).parent
+    if os.path.isdir(log_file_dir):
+        fileHandler = handlers.RotatingFileHandler(LOG_FILE_PATH, maxBytes=1024*5, backupCount=5)
+        logger.addHandler(fileHandler)
+    else:
+        logger.warning("Fail to write log to file, logging directory: {} doest not exists".format(log_file_dir))
+
+    logger.addHandler(logging.StreamHandler(sys.stdout))
 
 def main():
+    setup_logging()
+    
     bl = BussinessLogic()
     bl.run()
-
-    #engine = pyttsx3.init()
-    #engine.say("I will speak this text")
-    #engine.runAndWait()
 
 if __name__ == '__main__':
     main()
