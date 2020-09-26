@@ -1,0 +1,13 @@
+[Unit]
+Description=Tito Control Service
+After=mopidy
+StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+Restart=always
+RestartSec=1
+ExecStart=python3 /usr/local/bin/TitoControlService/TitoControlService.py
+
+[Install]
+WantedBy=multi-user.target

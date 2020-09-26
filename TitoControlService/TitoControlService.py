@@ -43,14 +43,14 @@ class BussinessLogic(object):
 
     def _on_connection(self, conn_state):
         if conn_state:
-            print("Mopidy Connected!")
+            logger.info("Mopidy Connected!")
     
     def _on_server_error(self, error):
-        print("Mopidy server error: " + error)
+        logger.error("Mopidy server error: " + error)
 
     def _on_play_pressed(self):
 
-        print("play")        
+        logger.info("play button pressed")        
 
         tagId = None
         if self.generalConfig['debug_rfid'] == "true":
@@ -59,15 +59,18 @@ class BussinessLogic(object):
             tagId = RFIDReader.ReadTag()
         
         if tagId is None: 
-                print("No RFID Tag found")
+                logger.warning("No RFID Tag found")
                 Speech("No RFID Tag found", "en").play()
         else:
             playlistInfo = self._getPlaylistInfoFromTagId(tagId)
             if playlistInfo is None:
-                print("Tag is not associated with any playlist")
+                logger.warning("Tag is not associated with any playlist")
                 Speech("Tag is not associated with any playlist", "en").play()
             else:
-                Speech(f'Now playing: {playlistInfo["name"]}, playlist.', "en").play()
+                speech_text = f'Now playing: {playlistInfo["name"]}, playlist.'
+                Speech(speech_text, "en").play()
+                
+                logger.info(speech_text)
                 self.mopidy.tracklist.clear()
                 self.mopidy.tracklist.add(uris=[playlistInfo['uri']])
                 self.mopidy.playback.play()
@@ -79,27 +82,29 @@ class BussinessLogic(object):
             return None
 
     def _on_stop_pressed(self):
-        print("stop")
+        logger.info("stop button pressed")
         self.mopidy.playback.pause()
         pass
 
     def _on_forward_pressed(self):
-        print("next")
+        logger.info("next button pressed")
         self.mopidy.playback.next()
         pass
 
     def _on_backward_pressed(self):
-        print("prev")
+        logger.info("prev button pressed")
         self.mopidy.playback.previous()
         pass
 
     def _on_pair_tag(self):
+        logger.info("Pair tag to playlist, retreiving playlists from spotify")
+
         # Print list of available playlists from mopidy
         self.mopidy.playlists.as_list(on_result=self._on_playlist_received)
 
     def _on_playlist_received(self, playlist):
         self.cli.show_playlists(playlist)
-
+        
         # Get playlist index from the list
         playlistIndex = int(input("Select playlist (enter index number): "))
 
@@ -113,13 +118,13 @@ class BussinessLogic(object):
             pass
 
         if tagId is None:
-            print("Failed to read RFID tag, try again.")
+            logger.error("Failed to read RFID tag, try again.")
             return
         
         # Get playlist uri and save it to a local config file with related rfid 
         self.playlistsTagsConfig = self.config.addPlaylistConfig(playlist[playlistIndex]['uri'], playlist[playlistIndex]['name'] ,tagId)
         
-        print(f'Playlist: {playlist[playlistIndex]["name"]} attached to Tag: {tagId}')
+        logger.info(f'Playlist: {playlist[playlistIndex]["name"]} attached to Tag: {tagId}')
 
     
     def run(self):
@@ -127,10 +132,10 @@ class BussinessLogic(object):
         self.cli.start()
 
 def setup_logging():
-
-    LOG_FILE_PATH = "/var/log/TitoMusicPlayer/TitoMusicPlayer.log"
     logger.setLevel(logging.DEBUG)
 
+    # setup file logging handler
+    LOG_FILE_PATH = "/var/log/TitoControlService/TitoControlService.log"
     log_file_dir = Path(LOG_FILE_PATH).parent
     if os.path.isdir(log_file_dir):
         fileHandler = handlers.RotatingFileHandler(LOG_FILE_PATH, maxBytes=1024*5, backupCount=5)
@@ -138,6 +143,7 @@ def setup_logging():
     else:
         logger.warning("Fail to write log to file, logging directory: {} doest not exists".format(log_file_dir))
 
+    # setup stdout logging
     logger.addHandler(logging.StreamHandler(sys.stdout))
 
 def main():
