@@ -15,4 +15,4 @@ sudo cp -r $SRC_INSTALLATION_DIR/* $DEST_INSTALLATION_DIR
 sudo cp $SRC_INSTALLATION_DIR/tito-control-service.service /etc/systemd/system/
 sudo systemctl daemon-reload
 sudo systemctl enable tito-control-service.service
-sudo systemctl start tito-control-service.service
+sudo systemctl restart tito-control-service.service
