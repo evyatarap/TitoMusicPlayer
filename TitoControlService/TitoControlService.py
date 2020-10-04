@@ -5,13 +5,13 @@ from configurations import Config
 from GPIOController import GPIOPlaybackController
 from cli import CLI
 from google_speech import Speech
-#from RFIDController import RFIDReader
+from RFIDController import RFIDReader
 import logging
 from logging import handlers
 from pathlib import Path
 import os
 
-logger = logging.getLogger("TitoMusicPlayer")
+logger = logging.getLogger("TitoControlService")
 
 class BussinessLogic(object):
 
