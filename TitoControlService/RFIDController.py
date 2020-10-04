@@ -13,7 +13,6 @@ class RFIDReader(object):
             rdr.cleanup()
             if not error:
                 return str(uid[0])+str(uid[1])+str(uid[2])+str(uid[3])
-
         return None
                 
         

@@ -6,7 +6,7 @@ import logging
 CONFIG_FILE_PATH = pathlib.Path.joinpath(pathlib.Path(__file__).parent, "config.json")
 PLAYLISTS_CONFIG_FILE_PATH = pathlib.Path.joinpath(pathlib.Path(__file__).parent, "playlists_tags.json")
 
-logger = logging.getLogger('tito_control_service')
+logger = logging.getLogger('TitoControlService')
 
 class Config(object):
 
