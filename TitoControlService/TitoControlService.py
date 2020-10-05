@@ -50,29 +50,37 @@ class BussinessLogic(object):
     def _on_play_pressed(self):
 
         logger.info("play button pressed")        
+        playlist_uri = None
 
-        tagId = None
-        if self.generalConfig['debug_rfid'] == "true":
-            tagId = "1232145531"
-        else:
-            tagId = RFIDReader.ReadTag()
-        
-        if tagId is None: 
-                logger.warning("No RFID Tag found")
-                Speech("No RFID Tag found", "en").play()
-        else:
-            playlistInfo = self._getPlaylistInfoFromTagId(tagId)
-            if playlistInfo is None:
-                logger.warning("Tag is not associated with any playlist")
-                Speech("Tag is not associated with any playlist", "en").play()
+        if self.generalConfig['tagging_enabled'] == "true":
+            tagId = None
+            if self.generalConfig['debug_rfid'] == "true":
+                tagId = "1232145531"
             else:
-                speech_text = f'Now playing: {playlistInfo["name"]}, playlist.'
-                Speech(speech_text, "en").play()
-                
-                logger.info(speech_text)
-                self.mopidy.tracklist.clear()
-                self.mopidy.tracklist.add(uris=[playlistInfo['uri']])
-                self.mopidy.playback.play()
+                tagId = RFIDReader.ReadTag()
+            
+            if tagId is None: 
+                    logger.warning("No RFID Tag found")
+                    Speech("No RFID Tag found", "en").play()
+            else:
+                playlistInfo = self._getPlaylistInfoFromTagId(tagId)
+                if playlistInfo is None:
+                    logger.warning("Tag is not associated with any playlist")
+                    Speech("Tag is not associated with any playlist", "en").play()
+                else:
+                    speech_text = f'Now playing: {playlistInfo["name"]}, playlist.'
+                    Speech(speech_text, "en").play()
+                    logger.info(speech_text)
+                    playlist_uri = playlistInfo['uri']
+        else:
+            speech_text = 'Start playing default playlist'
+            Speech(speech_text, "en").play()
+            playlist_uri = self.generalConfig['default_playlist']
+            logger.info(f'{speech_text}: {playlist_uri}')
+        
+        self.mopidy.tracklist.clear()
+        self.mopidy.tracklist.add(uris=[playlist_uri])
+        self.mopidy.playback.play()
         
     def _getPlaylistInfoFromTagId(self, tagId):
         try:

@@ -2,6 +2,8 @@
     "debug_rfid": "true",
     "debug": "true",
     "mopidy_url": "192.168.1.33:6680",
+    "tagging_enabled": "false",
+    "default_playlist": "spotify:playlist:41dH7JByYFPGTsfrYbJqTd",
     "playback_gpios":{
         "play": "6",
         "stop": "17",
