@@ -1,4 +1,3 @@
-import pyttsx3
 import sys
 from mopidy_json_client import MopidyClient
 from configurations import Config
