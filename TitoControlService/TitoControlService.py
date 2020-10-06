@@ -15,11 +15,12 @@ import time
 logger = logging.getLogger("TitoControlService")
 
 class BussinessLogic(object):
-
+    
     def __init__(self):
         self.config = Config()
         self.generalConfig = self.config.getGeneralConfig()
         self.playlistsTagsConfig = self.config.getPlaylistsConfig()
+        self.current_playlist_uri = None
 
         self.mopidy = MopidyClient(
             ws_url=f"ws://{self.generalConfig['mopidy_url']}/mopidy/ws",
@@ -45,6 +46,8 @@ class BussinessLogic(object):
     def _on_connection(self, conn_state):
         if conn_state:
             logger.info("Mopidy Connected!")
+        else:
+            logger.error("Failed to connect to mopidy server")
     
     def _on_server_error(self, error):
         logger.error("Mopidy server error: " + error)
@@ -71,17 +74,22 @@ class BussinessLogic(object):
                     Speech("Tag is not associated with any playlist", "en").play()
                 else:
                     speech_text = f'Now playing: {playlistInfo["name"]}, playlist.'
-                    Speech(speech_text, "en").play()
                     logger.info(speech_text)
                     playlist_uri = playlistInfo['uri']
         else:
             speech_text = 'Start playing default playlist'
-            Speech(speech_text, "en").play()
             playlist_uri = self.generalConfig['default_playlist']
             logger.info(f'{speech_text}: {playlist_uri}')
         
-        self.mopidy.tracklist.clear()
-        self.mopidy.tracklist.add(uris=[playlist_uri])
+        # Only if its a new playlist clear the current one 
+        # and notify the user via speech to text
+        if ((self.current_playlist_uri is None) or
+            (self.current_playlist_uri != playlist_uri)):
+            
+            Speech(speech_text, "en").play()
+            self.mopidy.tracklist.clear()
+            self.mopidy.tracklist.add(uris=[playlist_uri])
+
         self.mopidy.playback.play()
         
     def _getPlaylistInfoFromTagId(self, tagId):
