@@ -9,6 +9,8 @@ import logging
 from logging import handlers
 from pathlib import Path
 import os
+import argparse
+import time
 
 logger = logging.getLogger("TitoControlService")
 
@@ -133,10 +135,15 @@ class BussinessLogic(object):
         
         logger.info(f'Playlist: {playlist[playlistIndex]["name"]} attached to Tag: {tagId}')
 
-    
-    def run(self):
+
+    def run(self, cli_mode):
         self.mopidy.connect()
-        self.cli.start()
+        if cli_mode:
+            self.cli.start()
+        else:
+            logger.info("Starting TitoControlService as service")
+            while True:
+                time.sleep(1)
 
 def setup_logging():
     logger.setLevel(logging.DEBUG)
@@ -154,10 +161,14 @@ def setup_logging():
     logger.addHandler(logging.StreamHandler(sys.stdout))
 
 def main():
+    
     setup_logging()
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--cli", help="increase output verbosity")
+    args = parser.parse_args()
     
     bl = BussinessLogic()
-    bl.run()
+    bl.run(args.cli)
 
 if __name__ == '__main__':
     main()
