@@ -86,6 +86,7 @@ class BussinessLogic(object):
         if ((self.current_playlist_uri is None) or
             (self.current_playlist_uri != playlist_uri)):
             
+            self.current_playlist_uri = playlist_uri
             Speech(speech_text, "en").play()
             self.mopidy.tracklist.clear()
             self.mopidy.tracklist.add(uris=[playlist_uri])
