@@ -8,12 +8,12 @@ APP_LOG_DIR="/var/log/TitoControlService"
 sudo pip3 install -r requirements.txt
 
 # create service directories
-if [! -d $DEST_INSTALLATION_DIR ] 
+if [ ! -d $DEST_INSTALLATION_DIR ] 
 then
     sudo mkdir $DEST_INSTALLATION_DIR
 fi
 
-if [! -d $APP_LOG_DIR ]
+if [ ! -d $APP_LOG_DIR ]
 then
     sudo mkdir $APP_LOG_DIR
 fi
