@@ -1,7 +1,7 @@
 import sys
 from mopidy_json_client import MopidyClient
 from configurations import Config
-from GPIOController import GPIOPlaybackController
+from GPIOController import GPIOController
 from cli import CLI
 from google_speech import Speech
 from RFIDController import RFIDReader
@@ -21,6 +21,7 @@ class BussinessLogic(object):
         self.generalConfig = self.config.getGeneralConfig()
         self.playlistsTagsConfig = self.config.getPlaylistsConfig()
         self.current_playlist_uri = None
+        
 
         self.mopidy = MopidyClient(
             ws_url=f"ws://{self.generalConfig['mopidy_url']}/mopidy/ws",
@@ -31,11 +32,11 @@ class BussinessLogic(object):
             retry_secs=10
         )
 
-        self.gpioPlackbackController = GPIOPlaybackController(  self.generalConfig, 
-                                                                self._on_play_pressed, 
-                                                                self._on_stop_pressed, 
-                                                                self._on_forward_pressed, 
-                                                                self._on_backward_pressed)
+        self.gpioController = GPIOController(  self.generalConfig, 
+                                                self._on_play_pressed, 
+                                                self._on_stop_pressed, 
+                                                self._on_forward_pressed, 
+                                                self._on_backward_pressed)
 
         self.cli = CLI( self._on_play_pressed, 
                         self._on_stop_pressed, 
@@ -46,6 +47,7 @@ class BussinessLogic(object):
     def _on_connection(self, conn_state):
         if conn_state:
             logger.info("Mopidy Connected!")
+            self.gpioController.power_led_blink()
         else:
             logger.error("Failed to connect to mopidy server")
     

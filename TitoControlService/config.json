@@ -1,7 +1,7 @@
 {
     "debug_rfid": "true",
     "debug": "false",
-    "mopidy_url": "192.168.1.28:6680",
+    "mopidy_url": "0.0.0.0:6680",
     "tagging_enabled": "false",
     "default_playlist": "spotify:playlist:41dH7JByYFPGTsfrYbJqTd",
     "playback_gpios":{
@@ -9,5 +9,6 @@
         "stop": "17",
         "forward": "27",
         "backward" : "22"
-    }
+    },
+    "power_button_led": "16"
 }
