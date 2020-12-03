@@ -10,5 +10,5 @@
         "forward": "27",
         "backward" : "22"
     },
-    "power_button_led": "16"
+    "power_button_led": "3"
 }
